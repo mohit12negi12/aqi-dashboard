@@ -78,7 +78,7 @@ predictor = AQIPredictor()
 # WEATHER API
 # =========================
 
-API_KEY = "YOUR_OPENWEATHER_API_KEY"
+API_KEY = "f2d1c136bcd2d349eb9c32d393fcbb76"
 
 LAT = 31.515355
 LON = 76.878331
