@@ -20,6 +20,8 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+
 </head>
 
 <body>
@@ -41,14 +43,10 @@
 
         </div>
 
-        <div class="nav-right">
+        <div class="live-indicator">
 
-            <div class="live-indicator">
-
-                <span class="dot"></span>
-                LIVE
-
-            </div>
+            <span class="dot"></span>
+            LIVE
 
         </div>
 
@@ -125,26 +123,18 @@
 
                 <div class="weather-card">
 
-                    <div class="weather-top">
+                    <h2>Environment</h2>
+
+                    <div class="weather-main">
+
+                        <img id="weather-icon"
+                        src="https://cdn-icons-png.flaticon.com/512/869/869869.png">
 
                         <div>
 
-                            <h2>Environment</h2>
+                            <h1 id="temp">0°C</h1>
 
-                            <div class="weather-main">
-
-                                <img id="weather-icon"
-                                     src="https://cdn-icons-png.flaticon.com/512/869/869869.png">
-
-                                <div>
-
-                                    <h1 id="temp">38°C</h1>
-
-                                    <p id="weather-text">Sunny</p>
-
-                                </div>
-
-                            </div>
+                            <p id="weather-text">Sunny</p>
 
                         </div>
 
@@ -156,7 +146,7 @@
 
                             <span>Humidity</span>
 
-                            <h3 id="humidity">18%</h3>
+                            <h3 id="humidity">0%</h3>
 
                         </div>
 
@@ -164,7 +154,7 @@
 
                             <span>Wind</span>
 
-                            <h3 id="wind">6 km/h</h3>
+                            <h3 id="wind">0 km/h</h3>
 
                         </div>
 
@@ -172,7 +162,7 @@
 
                             <span>UV Index</span>
 
-                            <h3 id="uv">8.5</h3>
+                            <h3>8.5</h3>
 
                         </div>
 

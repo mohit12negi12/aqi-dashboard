@@ -49,7 +49,7 @@ init_db()
 
 
 # =========================
-# AQI PREDICTOR
+# AQI PREDICTION
 # =========================
 
 class AQIPredictor:
@@ -78,7 +78,7 @@ predictor = AQIPredictor()
 # WEATHER API
 # =========================
 
-API_KEY = "77f3efbce0c812e2161df6c7d3a2bddc"
+API_KEY = "YOUR_OPENWEATHER_API_KEY"
 
 LAT = 31.515355
 LON = 76.878331
@@ -86,28 +86,43 @@ LON = 76.878331
 
 def get_weather():
 
-    url = (
-        f"https://api.openweathermap.org/data/2.5/weather"
-        f"?lat={LAT}"
-        f"&lon={LON}"
-        f"&appid={API_KEY}"
-        f"&units=metric"
-    )
+    try:
 
-    response = requests.get(url)
+        url = (
+            f"https://api.openweathermap.org/data/2.5/weather"
+            f"?lat={LAT}"
+            f"&lon={LON}"
+            f"&appid={API_KEY}"
+            f"&units=metric"
+        )
 
-    data = response.json()
+        response = requests.get(url)
 
-    return {
+        data = response.json()
 
-        "temp": data["main"]["temp"],
+        return {
 
-        "humidity": data["main"]["humidity"],
+            "temp": data["main"]["temp"],
 
-        "wind": data["wind"]["speed"],
+            "humidity": data["main"]["humidity"],
 
-        "weather": data["weather"][0]["main"]
-    }
+            "wind": data["wind"]["speed"],
+
+            "weather": data["weather"][0]["main"]
+        }
+
+    except:
+
+        return {
+
+            "temp": 0,
+
+            "humidity": 0,
+
+            "wind": 0,
+
+            "weather": "Unavailable"
+        }
 
 
 # =========================
@@ -163,7 +178,7 @@ def update():
 
     history.append(data_store.copy())
 
-    # SAVE TO DATABASE
+    # DATABASE SAVE
 
     conn = sqlite3.connect("aqi.db")
 
@@ -195,10 +210,6 @@ def update():
         "status": "ok"
     })
 
-
-# =========================
-# RUN APP
-# =========================
 
 if __name__ == "__main__":
 

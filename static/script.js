@@ -19,9 +19,17 @@ document.getElementById("weather-icon");
 const weatherText =
 document.getElementById("weather-text");
 
+const temp =
+document.getElementById("temp");
+
+const humidity =
+document.getElementById("humidity");
+
+const wind =
+document.getElementById("wind");
+
 const ctx =
 document.getElementById("chart");
-
 
 let labels = [];
 
@@ -29,6 +37,10 @@ let pmData = [];
 
 let gasData = [];
 
+
+/* ===========================
+   CHART
+=========================== */
 
 const chart = new Chart(ctx, {
 
@@ -76,49 +88,13 @@ const chart = new Chart(ctx, {
 
     options: {
 
-        responsive:true,
-
-        plugins:{
-
-            legend:{
-
-                labels:{
-                    color:"white"
-                }
-            }
-        },
-
-        scales:{
-
-            x:{
-
-                ticks:{
-                    color:"#94a3b8"
-                },
-
-                grid:{
-                    color:"rgba(255,255,255,0.05)"
-                }
-            },
-
-            y:{
-
-                ticks:{
-                    color:"#94a3b8"
-                },
-
-                grid:{
-                    color:"rgba(255,255,255,0.05)"
-                }
-            }
-        }
+        responsive:true
     }
 });
 
 
-
 /* ===========================
-   LIVE MAP
+   MAP
 =========================== */
 
 const map =
@@ -127,7 +103,6 @@ L.map('map',{
 })
 .setView([31.515355, 76.878331], 14);
 
-
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 {
@@ -135,86 +110,43 @@ L.tileLayer(
 }).addTo(map);
 
 
-
-// Main Marker
-
-const marker =
 L.marker([31.515355, 76.878331])
-.addTo(map);
+.addTo(map)
+.bindPopup("JNGEC Sundernagar")
+.openPopup();
 
-marker.bindPopup(`
-    <b>JNGEC Sundernagar</b>
-    <br>
-    Live AQI Monitoring Station
-`).openPopup();
-
-
-
-// AQI Highlight Area
 
 const circle = L.circle(
     [31.515355, 76.878331],
     {
         color:'#00d4ff',
-
         fillColor:'#00d4ff',
-
         fillOpacity:0.25,
-
         radius:700,
-
         weight:2
     }
 ).addTo(map);
 
 
+const heat = L.heatLayer([
 
-// Outer Glow
+    [31.515355, 76.878331, 0.8],
 
-const glowCircle = L.circle(
-    [31.515355, 76.878331],
-    {
-        color:'#00ffff',
+    [31.516000, 76.879000, 0.5],
 
-        fillColor:'#00ffff',
+    [31.514000, 76.877000, 0.7],
 
-        fillOpacity:0.08,
+    [31.517000, 76.880000, 0.6]
 
-        radius:1200,
+], {
 
-        weight:1
-    }
-).addTo(map);
+    radius: 45,
 
+    blur: 40,
 
-
-// Custom Popup
-
-circle.bindPopup(`
-    <div style="
-        color:white;
-        background:black;
-        padding:10px;
-        border-radius:10px;
-        font-family:Inter;
-    ">
-
-    <h3 style="
-        margin:0;
-        color:#00d4ff;
-    ">
-        JNGEC AQI Zone
-    </h3>
-
-    <p style="
-        margin-top:8px;
-    ">
-        Real-time environmental monitoring area
-    </p>
-
-    </div>
-`);
-
+    maxZoom: 17
+})
+.addTo(map);
 
 
 /* ===========================
@@ -238,7 +170,6 @@ function getStatus(value){
         return "Unhealthy";
     }
 }
-
 
 
 /* ===========================
@@ -273,9 +204,8 @@ function updateWeather(aqi){
 }
 
 
-
 /* ===========================
-   FETCH SENSOR DATA
+   FETCH DATA
 =========================== */
 
 async function fetchData(){
@@ -297,7 +227,6 @@ async function fetchData(){
         const pred =
         result.prediction;
 
-
         pm25.innerText = pm;
 
         gas.innerText = gs;
@@ -305,54 +234,39 @@ async function fetchData(){
         prediction.innerText =
         Math.round(pred);
 
-
         const aqi =
         Math.max(pm, gs);
-
 
         aqiValue.innerText = aqi;
 
         aqiStatus.innerText =
         getStatus(aqi);
 
-
         updateWeather(aqi);
 
+        temp.innerText =
+        result.weather.temp + "°C";
 
-        // Dynamic AQI Highlight
+        humidity.innerText =
+        result.weather.humidity + "%";
 
-        if(aqi <= 50){
+        wind.innerText =
+        result.weather.wind + " km/h";
 
-            circle.setStyle({
+        weatherText.innerText =
+        result.weather.weather;
 
-                color:"#22c55e",
+        heat.setLatLngs([
 
-                fillColor:"#22c55e"
-            });
+            [31.515355, 76.878331, aqi / 100],
 
-        }
+            [31.516000, 76.879000, aqi / 120],
 
-        else if(aqi <= 100){
+            [31.514000, 76.877000, aqi / 140],
 
-            circle.setStyle({
+            [31.517000, 76.880000, aqi / 110]
 
-                color:"#eab308",
-
-                fillColor:"#eab308"
-            });
-
-        }
-
-        else{
-
-            circle.setStyle({
-
-                color:"#ef4444",
-
-                fillColor:"#ef4444"
-            });
-        }
-
+        ]);
 
         const time =
         new Date().toLocaleTimeString();
@@ -362,7 +276,6 @@ async function fetchData(){
         pmData.push(pm);
 
         gasData.push(gs);
-
 
         if(labels.length > 12){
 
@@ -382,7 +295,6 @@ async function fetchData(){
         console.log(error);
     }
 }
-
 
 fetchData();
 
