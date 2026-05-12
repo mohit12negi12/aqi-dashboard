@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Atmos AQI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+</head>
+
+<body>
+
+    <div class="background"></div>
+
+    <header class="navbar">
+
+        <div class="logo">
+
+            <h1>AQI</h1>
+
+        </div>
+
+        <div class="search-box">
+
+            <input type="text"
+                   placeholder="Search Location">
+
+        </div>
+
+        <div class="nav-right">
+
+            <div class="live-indicator">
+
+                <span class="dot"></span>
+                LIVE
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <section class="top-map">
+
+        <div id="map"></div>
+
+    </section>
+
+    <main class="dashboard">
+
+        <section class="main-card">
+
+            <div class="left-side">
+
+                <div class="aqi-header">
+
+                    <p>Live AQI</p>
+
+                    <h1 id="aqi-value">0</h1>
+
+                    <span id="aqi-status">Good</span>
+
+                </div>
+
+                <div class="pollutants">
+
+                    <div class="pollutant">
+
+                        <h3>PM2.5</h3>
+
+                        <p id="pm25">0</p>
+
+                    </div>
+
+                    <div class="pollutant">
+
+                        <h3>MQ135</h3>
+
+                        <p id="gas">0</p>
+
+                    </div>
+
+                    <div class="pollutant">
+
+                        <h3>Future AQI</h3>
+
+                        <p id="prediction">0</p>
+
+                    </div>
+
+                </div>
+
+                <div class="aqi-scale">
+
+                    <div class="scale-bar"></div>
+
+                    <div class="scale-labels">
+
+                        <span>Good</span>
+                        <span>Moderate</span>
+                        <span>Poor</span>
+                        <span>Unhealthy</span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="right-side">
+
+                <div class="weather-card">
+
+                    <div class="weather-top">
+
+                        <div>
+
+                            <h2>Environment</h2>
+
+                            <div class="weather-main">
+
+                                <img id="weather-icon"
+                                     src="https://cdn-icons-png.flaticon.com/512/869/869869.png">
+
+                                <div>
+
+                                    <h1 id="temp">38°C</h1>
+
+                                    <p id="weather-text">Sunny</p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="weather-stats">
+
+                        <div class="weather-stat">
+
+                            <span>Humidity</span>
+
+                            <h3 id="humidity">18%</h3>
+
+                        </div>
+
+                        <div class="weather-stat">
+
+                            <span>Wind</span>
+
+                            <h3 id="wind">6 km/h</h3>
+
+                        </div>
+
+                        <div class="weather-stat">
+
+                            <span>UV Index</span>
+
+                            <h3 id="uv">8.5</h3>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="chart-section">
+
+            <div class="chart-header">
+
+                <h2>Air Analytics</h2>
+
+                <p>Real-time pollution telemetry</p>
+
+            </div>
+
+            <canvas id="chart"></canvas>
+
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
