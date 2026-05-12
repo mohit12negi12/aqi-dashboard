@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify, render_template
 import time
 import numpy as np
 from sklearn.linear_model import LinearRegression
+import requests
+import sqlite3
 
 app = Flask(__name__)
 
@@ -12,6 +14,43 @@ data_store = {
 
 history = []
 
+
+# =========================
+# DATABASE
+# =========================
+
+def init_db():
+
+    conn = sqlite3.connect("aqi.db")
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+    CREATE TABLE IF NOT EXISTS readings (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        pm25 REAL,
+
+        gas REAL,
+
+        timestamp TEXT
+    )
+
+    """)
+
+    conn.commit()
+
+    conn.close()
+
+
+init_db()
+
+
+# =========================
+# AQI PREDICTOR
+# =========================
 
 class AQIPredictor:
 
@@ -35,6 +74,46 @@ class AQIPredictor:
 predictor = AQIPredictor()
 
 
+# =========================
+# WEATHER API
+# =========================
+
+API_KEY = "77f3efbce0c812e2161df6c7d3a2bddc"
+
+LAT = 31.515355
+LON = 76.878331
+
+
+def get_weather():
+
+    url = (
+        f"https://api.openweathermap.org/data/2.5/weather"
+        f"?lat={LAT}"
+        f"&lon={LON}"
+        f"&appid={API_KEY}"
+        f"&units=metric"
+    )
+
+    response = requests.get(url)
+
+    data = response.json()
+
+    return {
+
+        "temp": data["main"]["temp"],
+
+        "humidity": data["main"]["humidity"],
+
+        "wind": data["wind"]["speed"],
+
+        "weather": data["weather"][0]["main"]
+    }
+
+
+# =========================
+# ROUTES
+# =========================
+
 @app.route("/")
 def home():
 
@@ -55,13 +134,17 @@ def data():
 
         prediction = predictor.predict(pm_values)
 
+    weather = get_weather()
+
     return jsonify({
 
         "current": data_store,
 
         "history": history[-20:],
 
-        "prediction": prediction
+        "prediction": prediction,
+
+        "weather": weather
     })
 
 
@@ -73,17 +156,54 @@ def update():
     data = request.get_json()
 
     data_store["pm25"] = data["pm25"]
+
     data_store["gas"] = data["gas"]
 
     data_store["time"] = time.strftime("%H:%M:%S")
 
     history.append(data_store.copy())
 
+    # SAVE TO DATABASE
+
+    conn = sqlite3.connect("aqi.db")
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+    INSERT INTO readings (
+    pm25,
+    gas,
+    timestamp
+    )
+
+    VALUES (?, ?, ?)
+
+    """, (
+
+        data_store["pm25"],
+        data_store["gas"],
+        data_store["time"]
+
+    ))
+
+    conn.commit()
+
+    conn.close()
+
     return jsonify({
         "status": "ok"
     })
 
 
+# =========================
+# RUN APP
+# =========================
+
 if __name__ == "__main__":
 
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )
